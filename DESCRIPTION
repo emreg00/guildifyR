@@ -1,0 +1,18 @@
+Package: guildifyR 
+Title: GUILDify R 
+Version: 0.1
+Author: Emre Guney and Juaquim Aguirre-Plans
+Maintainer: Emre Guney <emreguney@gmail.com>
+Description: Methods to connect GUILDify v2.0 web server to
+    retrieve genes associated with a given phenotype and 
+    to apply interactome-based prioritization of genes in
+    the species / tissue specific protein interaction network.
+Imports:
+    Biobase,
+    GEOquery
+Depends:
+    R (>= 3.0.2)
+Suggests:
+    limma,
+License: TBA - potentially GPL
+LazyData: true
