@@ -8,11 +8,12 @@ Description: Methods to connect GUILDify v2.0 web server to
     to apply interactome-based prioritization of genes in
     the species / tissue specific protein interaction network.
 Imports:
-    Biobase,
-    GEOquery
+    httr,
+    rvest,
 Depends:
-    R (>= 3.0.2)
-Suggests:
-    limma,
+    R (>= 3.0.2),
+    magrittr
 License: TBA - potentially GPL
+Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1

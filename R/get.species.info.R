@@ -5,9 +5,9 @@
 #' @examples
 #' result = get.species.info()
 #' @export
-query<-function() {
+get.species.info<-function() {
     result <- NULL
-    html <- httr::POST(url = paste0(guildifyR::get.url())) 
+    html <- httr::POST(url = paste0(guildifyR:::get.url())) 
     html <- httr::content(html)
     species = c()
     tissues = c()

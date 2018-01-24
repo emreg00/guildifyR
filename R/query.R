@@ -5,16 +5,16 @@
 #' @param species Species tax id identifier (9606: human, 10090: mouse, etc.)
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
-#' result.table = query("alzheimer", species="10090", tissue="all")
+#' result.table = query("alzheimer", species="10090", tissue="All")
 #' @export
 query<-function(keywords, species="9606", tissue="All") {
-    guildifyR::check.parameters(species, tissue)
+    guildifyR:::check.parameters(species, tissue)
     result.table <- NULL
-    html <- httr::POST(url = paste0(guildifyR::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
+    html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
     html <- httr::content(html)
     # Get query result table
     get.query.result.table<-function(html, idx.table) {
-	heading <- html %>% rvest::html_nodes(xpath="//table/tr/th") %>% rvest::html_text()
+	heading <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text()
 	heading <- heading[1:(length(heading)/2)][-1]
 	result <- data.frame(matrix(nrow = 0, ncol = length(heading)+2))
 	colnames(result) <- c("id", tolower(gsub(" ", ".", trimws(heading))), "source")
@@ -46,11 +46,12 @@ query<-function(keywords, species="9606", tissue="All") {
 	}
 	return(result)
     }
-    result <- get.query.result.table(html, 2)
+    result <- get.query.result.table(html, 3)
     result[, "in.network"] <- 1
-    result.out <- rbind(get.query.result.table(html, 3)) 
+    result.out <- rbind(get.query.result.table(html, 4)) 
     result.out[, "in.network"] <- 0
     result.table <- rbind(result, result.out)
+    print(sprintf("%d entries are retrieved (%d not in network)", nrow(result.table), nrow(result.out)))
     return(result.table)
 }
 
