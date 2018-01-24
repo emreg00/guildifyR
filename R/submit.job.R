@@ -6,6 +6,7 @@
 #' @return job id
 #' @examples
 #' species="10090"
+#' tissue="All"
 #' result.table = query("alzheimer", species)
 #' NetScore
 #' scoring.options = list(netscore=T, repetitionSelector=3, iterationSelector=2)
@@ -15,9 +16,9 @@
 #' scoring.options = list(netshort=T)
 #' NetCombo
 #' scoring.options = list(netcombo=T)
-#' job.id = submit.job(result.table, species, scoring.options)
+#' job.id = submit.job(result.table, species, tissue, scoring.options)
 #' @export
-submit.job<-function(result.table, species, scoring.options=list(netcombo=T)) {
+submit.job<-function(result.table, species, tissue, scoring.options=list(netcombo=T)) {
     job.id = NULL
     if(!is.null(scoring.options$netcombo)) {
 	# NetScore
@@ -27,8 +28,8 @@ submit.job<-function(result.table, species, scoring.options=list(netcombo=T)) {
 	# NetShort
 	scoring.options = c(scoring.options, list(netshort=T))
     }
-    parameters <- c(list(species=species), as.list(setNames(c(result.table$id), result.table$id)), scoring.options)
-    html <- httr::POST(url = paste0(guildifyR:::url, "/status"), body = parameters) #! guildifyR::get.url()
+    parameters <- c(list(species=species, tissue=tissue), as.list(setNames(c(result.table$id), result.table$id)), scoring.options)
+    html <- httr::POST(url = paste0(guildifyR::get.url(), "/status"), body = parameters) 
     html <- httr::content(html)
     job.id <- html %>% rvest::html_nodes("table") %>% rvest::html_table() %>% .[[1]] %>% .[1,2] # as.data.frame()[1,2]
     return(job.id)

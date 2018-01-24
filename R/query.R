@@ -5,11 +5,11 @@
 #' @param species Species tax id identifier (9606: human, 10090: mouse, etc.)
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
-#' result.table = query("alzheimer", species="10090")
+#' result.table = query("alzheimer", species="10090", tissue="all")
 #' @export
-query<-function(keywords, species="9606") {
+query<-function(keywords, species="9606", tissue="All") {
     result.table <- NULL
-    html <- httr::POST(url = paste0(guildifyR:::url, "/query"), body = list(keywords=keywords, species=species)) #! guildifyR::get.url()
+    html <- httr::POST(url = paste0(guildifyR::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
     html <- httr::content(html)
     # Get query result table
     get.query.result.table<-function(html, idx.table) {
