@@ -8,6 +8,7 @@
 #' result.table = query("alzheimer", species="10090", tissue="all")
 #' @export
 query<-function(keywords, species="9606", tissue="All") {
+    guildifyR::check.parameters(species, tissue)
     result.table <- NULL
     html <- httr::POST(url = paste0(guildifyR::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
     html <- httr::content(html)

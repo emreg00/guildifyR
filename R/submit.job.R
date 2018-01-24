@@ -19,6 +19,7 @@
 #' job.id = submit.job(result.table, species, tissue, scoring.options)
 #' @export
 submit.job<-function(result.table, species, tissue, scoring.options=list(netcombo=T)) {
+    guildifyR::check.parameters(species, tissue, scoring.options)
     job.id = NULL
     if(!is.null(scoring.options$netcombo)) {
 	# NetScore
