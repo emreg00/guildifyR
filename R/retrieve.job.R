@@ -25,6 +25,23 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir="./") {
     }
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result/", job.id, "/1/", n.top2, "/1"))) 
     html <- httr::content(html)
+    txt <- html %>% rvest::html_nodes(xpath="//h1") 
+    if(length(txt) > 0) {
+	txt <- txt %>% rvest::html_text() %>% trimws() # %>% tolower
+	if(startsWith(txt, "Server Error")) {
+	    print("Servor Error!") #txt)
+	    print("Please make sure that you have provided a valid job id and if the problem persists contact to web master.")
+	    return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
+	}
+    }
+    txt <- html %>% rvest::html_nodes(xpath="//b") %>% .[1] %>% rvest::html_text() %>% trimws()
+    if(length(txt) > 0) {
+	if(startsWith(txt, "Your job is in")) {
+	    print(txt)
+	    print("Please try again later (e.g., within 15 mins).")
+	    return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
+	}
+    }
     # Get scoring result table
     heading <- html %>% rvest::html_nodes(xpath="//table/tr/th") %>% rvest::html_text() 
     result.all <- html %>% rvest::html_nodes("table") %>% rvest::html_table() # %>% .[[1]] %>% as.data.frame()

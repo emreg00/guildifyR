@@ -29,10 +29,14 @@ submit.job<-function(result.table, species, tissue, scoring.options=list(netcomb
 	# NetShort
 	scoring.options = c(scoring.options, list(netshort=T))
     }
+    # Filter entries that are not in the network #! should make sure that it does not cause an error to submit them 
+    result.table <- result.table[result.table$in.network==1,]
     parameters <- c(list(species=species, tissue=tissue), as.list(setNames(c(result.table$id), result.table$id)), scoring.options)
     html <- httr::POST(url = paste0(guildifyR:::get.url(), "/status"), body = parameters) 
     html <- httr::content(html)
     job.id <- html %>% rvest::html_nodes("table") %>% rvest::html_table() %>% .[[1]] %>% .[1,2] # as.data.frame()[1,2]
+    print("Your job has been submitted! Please do not submit the same job (you can check its status using 'retrieve.job' method.")
+    print(sprintf("Job id: %s", job.id))
     return(job.id)
 }
 
