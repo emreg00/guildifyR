@@ -5,7 +5,7 @@
 #' @param n.top Number of top proteins to retrieve. If NULL top enriched proteins are provided (upto 500 proteins)
 #' @param fetch.files Flag to fetch result files from server and save them locally in output.dir
 #' @param output.dir Directory to save the ranking, function, subnetwork and drug info files fetched from the server
-#' @return list containing scores of top-ranking proteins, 
+#' @return result List containing scores of top-ranking proteins, 
 #'         functions enriched among top-ranking proteins,
 #'         drugs targeting top-ranking proteins,
 #'         top-ranking subnetwork cutoff

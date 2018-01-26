@@ -2,7 +2,8 @@
 #' Get protein/gene info associated with the query keywords
 #'
 #' @param keywords Text containing description of a phenotype or list of genes (seperated by ;)
-#' @param species Species tax id identifier (9606: human, 10090: mouse, etc.)
+#' @param species Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)
+#' @param tissues Tissue identifier (All, brain, liver, etc., see get.species.info method)
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
 #' result.table = query("alzheimer", species="10090", tissue="All")

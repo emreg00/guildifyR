@@ -16,7 +16,7 @@ retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = "./")
 \item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files fetched from the server}
 }
 \value{
-list containing scores of top-ranking proteins, 
+result List containing scores of top-ranking proteins, 
         functions enriched among top-ranking proteins,
         drugs targeting top-ranking proteins,
         top-ranking subnetwork cutoff

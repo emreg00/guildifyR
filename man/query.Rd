@@ -9,7 +9,9 @@ query(keywords, species = "9606", tissue = "All")
 \arguments{
 \item{keywords}{Text containing description of a phenotype or list of genes (seperated by ;)}
 
-\item{species}{Species tax id identifier (9606: human, 10090: mouse, etc.)}
+\item{species}{Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)}
+
+\item{tissues}{Tissue identifier (All, brain, liver, etc., see get.species.info method)}
 }
 \value{
 result.table Data frame containing list of matching proteins/genes and their description

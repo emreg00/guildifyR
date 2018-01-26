@@ -20,8 +20,14 @@ document()
 setwd("..")
 install("guildifyR)
 
+## Generating tar.gz archieve
+tar cvzf guildifyR.tgz --exclude .git guildifyR/
+
 ## Generating manual using Rd2pdf
 R CMD Rd2pdf --pdf --title='guildifyR' -o guildifyR.pdf man/*.Rd
+
+## Install from tgz file
+R CMD INSTALL guildifyR.tgz
 
 ## Example query and retrieve results code
 ```R

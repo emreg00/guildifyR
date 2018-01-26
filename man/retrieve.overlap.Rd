@@ -16,7 +16,7 @@ retrieve.overlap(job.id1, job.id2, fetch.files = F, output.dir = "./")
 \item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files fetched from the server}
 }
 \value{
-list containing scores of common top-ranking proteins, 
+result List containing scores of common top-ranking proteins, 
         common functions enriched among top-ranking proteins,
         drugs targeting common top-ranking proteins
         (Note that the number of top-ranking proteins and common functions are limited to 500)
@@ -25,7 +25,7 @@ list containing scores of common top-ranking proteins,
 Retrieve overlap between two results using two job ids
 }
 \examples{
-result = retrieve.job(job.id)
+result = retrieve.overlap(job.id1, job.id2)
 names(result)
 head(result$score.table)
 }
