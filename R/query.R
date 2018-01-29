@@ -13,6 +13,10 @@ query<-function(keywords, species="9606", tissue="All") {
     result.table <- NULL
     html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
     html <- httr::content(html)
+    txt <- html %>% rvest::html_nodes(xpath="//p") %>% rvest::html_text() %>% .[1] %>% trimws()
+    if(txt == "No match for the query!") {
+	stop(txt)
+    }
     # Get query result table
     get.query.result.table<-function(html, idx.table) {
 	heading <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text()

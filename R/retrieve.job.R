@@ -2,7 +2,7 @@
 #' Retrieve results using job id
 #'
 #' @param job.id Job id
-#' @param n.top Number of top proteins to retrieve. If NULL top enriched proteins are provided (upto 500 proteins)
+#' @param n.top Number of top proteins to retrieve. If NULL top functionally enriched proteins are provided (upto 500 proteins)
 #' @param fetch.files Flag to fetch result files from server and save them locally in output.dir
 #' @param output.dir Directory to save the ranking, function, subnetwork and drug info files fetched from the server
 #' @return result List containing scores of top-ranking proteins, 
@@ -21,6 +21,9 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir="./") {
     if(is.null(n.top)) {
 	n.top2 <- 500
     } else {
+	if(n.top > 500) {
+	    n.top <- 500
+	}
 	n.top2 <- n.top
     }
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result/", job.id, "/1/", n.top2, "/1"))) 

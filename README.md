@@ -36,10 +36,10 @@ library(guildifyR)
 species="9606"
 tissue="All"
 result.table = query("alzheimer", species, tissue)
-job.id = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=1, iterationSelector=1))
+job.id = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=3, iterationSelector=2))
 result = retrieve.job(job.id)
 result.table = query("lung neoplasms", species, tissue)
-job.id2 = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=1, iterationSelector=1))
+job.id2 = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=3, iterationSelector=2))
 result = retrieve.overlap(job.id, job.id2)
 ```
 
