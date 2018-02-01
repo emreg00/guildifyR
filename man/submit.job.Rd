@@ -22,13 +22,15 @@ Submit job using the guildifyR query result table
 species="10090"
 tissue="All"
 result.table = query("alzheimer", species)
-NetScore
+#Diamond
+scoring.options = list(diamond=T)
+#NetScore
 scoring.options = list(netscore=T, repetitionSelector=3, iterationSelector=2)
-NetZcore
+#NetZcore
 scoring.options = list(netzcore=T, repetitionZelector=3)
-NetShort
+#NetShort
 scoring.options = list(netshort=T)
-NetCombo
+#NetCombo
 scoring.options = list(netcombo=T)
 job.id = submit.job(result.table, species, tissue, scoring.options)
 }

@@ -12,3 +12,4 @@ html address
 \description{
 Return the base url
 }
+\keyword{internal}

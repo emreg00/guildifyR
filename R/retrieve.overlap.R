@@ -11,13 +11,14 @@
 #'         (Note that the number of top-ranking proteins and common functions are limited to 500)
 #' @examples
 #' result = retrieve.overlap(job.id1, job.id2)
-#' names(result)
-#' head(result$score.table)
+#' getSlots(class(result))
+#' head(scores(result))
 #' @export
 retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
     result.table = NULL
     go.table <- NULL
     drug.table <- NULL
+    message(paste("Retrieving the overlap between", job.id1, job.id2))
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result_overlap/", job.id1, "/", job.id2, "/1/500/1/500/1")))
     html <- httr::content(html)
     heading <- html %>% rvest::html_nodes(xpath="//table/tr/th") %>% rvest::html_text() 
@@ -49,9 +50,9 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
     drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
     drug.table$targets <- gsub(";", ", ", drug.table$targets) 
     # Print genetic and functional overlap
-    print("Genetic overlap")
+    message("Genetic overlap")
     print(result.stats)
-    print("Functional overlap")
+    message("Functional overlap")
     print(go.stats)
     # Save results in file
     if(fetch.files) {
@@ -61,6 +62,8 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
 	write.table(go.table, file = paste0(output.dir, job.id1, job.id2, "_functions_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
 	write.table(drug.table, file = paste0(output.dir, job.id1, job.id2, "_drugs_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
-    return(list(protein.table=result.table, function.table=go.table, drug.table=drug.table))
+    #return(list(protein.table=result.table, function.table=go.table, drug.table=drug.table))
+    gify <- GifyResult(result.table, go.table, drug.table, NULL, job.id, job.id)
+    return(gify)
 }
 

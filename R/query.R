@@ -4,13 +4,23 @@
 #' @param keywords Text containing description of a phenotype or list of genes (seperated by ;)
 #' @param species Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)
 #' @param tissues Tissue identifier (All, brain, liver, etc., see get.species.info method)
+#' @param whitespaces.as.and Treat whitespaces as ANDs in querying (quotes the keywords)
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
 #' result.table = query("alzheimer", species="10090", tissue="All")
 #' @export
-query<-function(keywords, species="9606", tissue="All") {
+query<-function(keywords, species="9606", tissue="All", whitespaces.as.and=T) {
     guildifyR:::check.parameters(species, tissue)
     result.table <- NULL
+    if(whitespaces.as.and) {
+	keywords <- gsub('"', '', keywords) 
+	if(!startsWith(keywords, '"')) {
+	    keywords <- paste0("\"", keywords)
+	} 
+	if(!endsWith(keywords, '"')) {
+	    keywords <- paste0(keywords, "\"")
+	}
+    }
     html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
     html <- httr::content(html)
     txt <- html %>% rvest::html_nodes(xpath="//p") %>% rvest::html_text() %>% .[1] %>% trimws()

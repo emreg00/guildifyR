@@ -4,12 +4,14 @@
 \alias{query}
 \title{Get protein/gene info associated with the query keywords}
 \usage{
-query(keywords, species = "9606", tissue = "All")
+query(keywords, species = "9606", tissue = "All", whitespaces.as.and = T)
 }
 \arguments{
 \item{keywords}{Text containing description of a phenotype or list of genes (seperated by ;)}
 
 \item{species}{Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)}
+
+\item{whitespaces.as.and}{Treat whitespaces as ANDs in querying (quotes the keywords)}
 
 \item{tissues}{Tissue identifier (All, brain, liver, etc., see get.species.info method)}
 }

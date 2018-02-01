@@ -4,12 +4,12 @@
 \alias{retrieve.job}
 \title{Retrieve results using job id}
 \usage{
-retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = "./")
+retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = ".")
 }
 \arguments{
 \item{job.id}{Job id}
 
-\item{n.top}{Number of top proteins to retrieve. If NULL top enriched proteins are provided (upto 500 proteins)}
+\item{n.top}{Number of top proteins to retrieve. If NULL top functionally enriched proteins are provided (upto 500 proteins)}
 
 \item{fetch.files}{Flag to fetch result files from server and save them locally in output.dir}
 
@@ -26,6 +26,6 @@ Retrieve results using job id
 }
 \examples{
 result = retrieve.job(job.id)
-names(result)
-head(result$score.table)
+getSlots(class(result))
+head(scores(result))
 }

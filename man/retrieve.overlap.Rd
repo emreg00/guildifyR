@@ -26,6 +26,6 @@ Retrieve overlap between two results using two job ids
 }
 \examples{
 result = retrieve.overlap(job.id1, job.id2)
-names(result)
-head(result$score.table)
+getSlots(class(result))
+head(scores(result))
 }

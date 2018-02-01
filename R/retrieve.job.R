@@ -11,10 +11,10 @@
 #'         top-ranking subnetwork cutoff
 #' @examples
 #' result = retrieve.job(job.id)
-#' names(result)
-#' head(result$score.table)
+#' getSlots(class(result))
+#' head(scores(result))
 #' @export
-retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir="./") {
+retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
     result.table = NULL
     go.table <- NULL
     drug.table <- NULL
@@ -26,23 +26,24 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir="./") {
 	}
 	n.top2 <- n.top
     }
+    message(paste("Retrieving ", job.id))
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result/", job.id, "/1/", n.top2, "/1"))) 
     html <- httr::content(html)
     txt <- html %>% rvest::html_nodes(xpath="//h1") 
     if(length(txt) > 0) {
 	txt <- txt %>% rvest::html_text() %>% trimws() # %>% tolower
 	if(startsWith(txt, "Server Error")) {
-	    print("Servor Error!") #txt)
-	    print("Please make sure that you have provided a valid job id and if the problem persists contact to web master.")
-	    return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
+	    warning("Server Error!") #txt)
+	    stop("Please make sure that you have provided a valid job id and if the problem persists contact to web master.")
+	    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
 	}
     }
     txt <- html %>% rvest::html_nodes(xpath="//b") %>% .[1] %>% rvest::html_text() %>% trimws()
     if(length(txt) > 0) {
 	if(startsWith(txt, "Your job is in")) {
-	    print(txt)
-	    print("Please try again later (e.g., within 15 mins).")
-	    return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
+	    warning(txt)
+	    stop("Please try again later (e.g., within 15 mins).")
+	    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
 	}
     }
     # Get scoring result table
@@ -81,14 +82,20 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir="./") {
     if(fetch.files) {
 	if(is.null(n.top)) {
 	    suffix <- paste0("enrich_", cutoff)
+	    # Make sure that the files are generated 
+	    html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result/", job.id, "/1/20/", suffix))) 
 	} else {
 	    suffix <- "1"
 	}
+	output.dir <- file.path(output.dir, "/")
+	dir.create(output.dir)
 	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/guild_scores.txt"), destfile=paste0(output.dir, job.id, ".txt"), method="auto", quiet = FALSE)
 	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/subnetwork.sif.", suffix), destfile=paste0(output.dir, job.id, "_subnetwork_top_", suffix, ".sif"), method="auto", quiet = FALSE)
 	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=paste0(output.dir, job.id, "_drugs_top_", suffix, ".txt"), method="auto", quiet = FALSE)
 	write.table(go.table, file = paste0(output.dir, job.id, "_functions_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
-    return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=cutoff))
+    gify <- GifyResult(result.table, go.table, drug.table, cutoff, job.id, NULL)
+    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=cutoff))
+    return(gify)
 }
 

@@ -1,6 +1,6 @@
 Package: guildifyR 
 Title: GUILDify R 
-Version: 0.1
+Version: 1.0
 Author: Emre Guney and Juaquim Aguirre-Plans
 Maintainer: Emre Guney <emreguney@gmail.com>
 Description: Methods to connect GUILDify v2.0 web server to

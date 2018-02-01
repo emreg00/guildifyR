@@ -8,13 +8,15 @@
 #' species="10090"
 #' tissue="All"
 #' result.table = query("alzheimer", species)
-#' NetScore
+#' #Diamond
+#' scoring.options = list(diamond=T)
+#' #NetScore
 #' scoring.options = list(netscore=T, repetitionSelector=3, iterationSelector=2)
-#' NetZcore
+#' #NetZcore
 #' scoring.options = list(netzcore=T, repetitionZelector=3)
-#' NetShort
+#' #NetShort
 #' scoring.options = list(netshort=T)
-#' NetCombo
+#' #NetCombo
 #' scoring.options = list(netcombo=T)
 #' job.id = submit.job(result.table, species, tissue, scoring.options)
 #' @export
@@ -35,7 +37,7 @@ submit.job<-function(result.table, species, tissue, scoring.options=list(netcomb
     html <- httr::POST(url = paste0(guildifyR:::get.url(), "/status"), body = parameters) 
     html <- httr::content(html)
     job.id <- html %>% rvest::html_nodes("table") %>% rvest::html_table() %>% .[[1]] %>% .[1,2] # as.data.frame()[1,2]
-    print("Your job has been submitted! Please do not submit the same job (you can check its status using 'retrieve.job' method.")
+    print("Your job has been submitted! Please do not submit the same job (you can check its status using 'retrieve.job' method.)")
     print(sprintf("Job id: %s", job.id))
     return(job.id)
 }

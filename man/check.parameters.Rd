@@ -6,6 +6,14 @@
 \usage{
 check.parameters(species, tissue, scoring.options = NULL)
 }
+\arguments{
+\item{species}{Species tax id}
+
+\item{tissue}{Tissue name}
+
+\item{scoring.options}{Parameters for prioritization}
+}
 \description{
 Check whether provided species, tissue and scoring parameter values are valid
 }
+\keyword{internal}

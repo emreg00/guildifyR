@@ -1,5 +1,9 @@
 
 #' Check whether provided species, tissue and scoring parameter values are valid
+#' @param species Species tax id
+#' @param tissue Tissue name
+#' @param scoring.options Parameters for prioritization
+#' @keywords internal
 check.parameters<-function(species, tissue, scoring.options=NULL) {
     result = guildifyR::get.species.info()
     if(!(species %in% result$species) | !(tissue %in% result$tissues)) {
@@ -18,6 +22,16 @@ check.parameters<-function(species, tissue, scoring.options=NULL) {
 	}
 	if(length(setdiff(names(scoring.options), valid.names)) > 0) {
 	    sprintf("(Warning) The following parameters are ignored: %s", paste0(setdiff(names(scoring.options), valid.names), collapse=", "))
+	}
+	if("netscore" %in% names(scoring.options)) {
+	    if(!("repetitionSelector" %in% names(scoring.options) & "iterationSelector" %in% names(scoring.options))) {
+		stop(paste0("netscore needs the following additional parameters: ", "repetitionSelector", ", ", "iterationSelector"))
+	    }
+	}
+	if("netzcore" %in% names(scoring.options)) {
+	    if(!("repetitionZelector" %in% names(scoring.options))) {
+		stop(paste0("netzcore needs the following additional parameter: ", "repetitionZelector"))
+	    }
 	}
     }
 }
