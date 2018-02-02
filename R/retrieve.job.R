@@ -4,7 +4,8 @@
 #' @param job.id Job id
 #' @param n.top Number of top proteins to retrieve. If NULL top functionally enriched proteins are provided (upto 500 proteins)
 #' @param fetch.files Flag to fetch result files from server and save them locally in output.dir
-#' @param output.dir Directory to save the ranking, function, subnetwork and drug info files fetched from the server
+#' @param output.dir Directory to save the ranking, function, subnetwork and drug info files 
+#'	  fetched from the server (if NULL, a folder named same as job.id in the current working directory)
 #' @return result List containing scores of top-ranking proteins, 
 #'         functions enriched among top-ranking proteins,
 #'         drugs targeting top-ranking proteins,
@@ -14,7 +15,7 @@
 #' getSlots(class(result))
 #' head(scores(result))
 #' @export
-retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
+retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     result.table = NULL
     go.table <- NULL
     drug.table <- NULL
@@ -26,7 +27,7 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
 	}
 	n.top2 <- n.top
     }
-    message(paste("Retrieving ", job.id))
+    message(paste("Retrieving", job.id))
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result/", job.id, "/1/", n.top2, "/1"))) 
     html <- httr::content(html)
     txt <- html %>% rvest::html_nodes(xpath="//h1") 
@@ -41,6 +42,9 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
     txt <- html %>% rvest::html_nodes(xpath="//b") %>% .[1] %>% rvest::html_text() %>% trimws()
     if(length(txt) > 0) {
 	if(startsWith(txt, "Your job is in")) {
+	    if(grepl("error", txt)) {
+		stop("There was an error with the job and it was not completed. Try again and contact webmaster if the problem persists.")
+	    }
 	    warning(txt)
 	    stop("Please try again later (e.g., within 15 mins).")
 	    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
@@ -74,10 +78,14 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
     # Get drugs targeting top ranking genes
     #names <- heading[16:length(heading)]
     names <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text() 
-    drug.table <- result.all %>% .[[4]] %>% as.data.frame()
-    colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
-    drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
-    drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+    if(length(names) > 0) {
+	drug.table <- result.all %>% .[[4]] %>% as.data.frame()
+	colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
+	drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
+	drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+    } else {
+	drug.table <- data.frame()
+    }
     # Save results in file
     if(fetch.files) {
 	if(is.null(n.top)) {
@@ -87,12 +95,16 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=".") {
 	} else {
 	    suffix <- "1"
 	}
-	output.dir <- file.path(output.dir, "/")
+	if(is.null(output.dir)) {
+	    output.dir = file.path(getwd(), job.id)
+	}
 	dir.create(output.dir)
-	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/guild_scores.txt"), destfile=paste0(output.dir, job.id, ".txt"), method="auto", quiet = FALSE)
-	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/subnetwork.sif.", suffix), destfile=paste0(output.dir, job.id, "_subnetwork_top_", suffix, ".sif"), method="auto", quiet = FALSE)
-	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=paste0(output.dir, job.id, "_drugs_top_", suffix, ".txt"), method="auto", quiet = FALSE)
-	write.table(go.table, file = paste0(output.dir, job.id, "_functions_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/guild_scores.txt"), destfile=file.path(output.dir, "scores.txt"), method="auto", quiet = FALSE)
+	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/subnetwork.sif.", suffix), destfile=file.path(output.dir, paste0("subnetwork_top_", suffix, ".sif")), method="auto", quiet = FALSE)
+	if(length(names) > 0) {
+	    download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), method="auto", quiet = FALSE)
+	}
+	write.table(go.table, file = file.path(output.dir, paste0("_functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
     gify <- GifyResult(result.table, go.table, drug.table, cutoff, job.id, NULL)
     #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=cutoff))

@@ -1,24 +1,26 @@
 
 #' Get protein/gene info associated with the query keywords
 #'
-#' @param keywords Text containing description of a phenotype or list of genes (seperated by ;)
+#' @param keywords Text containing description of a phenotype or list of genes (seperated by ";")
 #' @param species Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)
 #' @param tissues Tissue identifier (All, brain, liver, etc., see get.species.info method)
-#' @param whitespaces.as.and Treat whitespaces as ANDs in querying (quotes the keywords)
+#' @param quote.keywords Quotes the keywords to treat whitespaces as ANDs (e.g., "Muscular Dystrophy")
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
 #' result.table = query("alzheimer", species="10090", tissue="All")
 #' @export
-query<-function(keywords, species="9606", tissue="All", whitespaces.as.and=T) {
+query<-function(keywords, species="9606", tissue="All", quote.keywords=T) {
     guildifyR:::check.parameters(species, tissue)
     result.table <- NULL
-    if(whitespaces.as.and) {
+    if(quote.keywords) {
 	keywords <- gsub('"', '', keywords) 
-	if(!startsWith(keywords, '"')) {
-	    keywords <- paste0("\"", keywords)
-	} 
-	if(!endsWith(keywords, '"')) {
-	    keywords <- paste0(keywords, "\"")
+	if(!grepl(';', keywords)) {
+	    if(!startsWith(keywords, '"')) {
+		keywords <- paste0("\"", keywords)
+	    } 
+	    if(!endsWith(keywords, '"')) {
+		keywords <- paste0(keywords, "\"")
+	    }
 	}
     }
     html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
@@ -61,7 +63,13 @@ query<-function(keywords, species="9606", tissue="All", whitespaces.as.and=T) {
 	}
 	return(result)
     }
-    result <- get.query.result.table(html, 3)
+    #result <- get.query.result.table(html, 3)
+    result <- tryCatch({
+	get.query.result.table(html, 3)
+    }, error = function(e) {
+	warning(e)
+	stop("An error occurred with the query, make sure the provided keywords are correct!")
+    })
     result[, "in.network"] <- 1
     result.out <- rbind(get.query.result.table(html, 4)) 
     result.out[, "in.network"] <- 0

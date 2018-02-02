@@ -4,7 +4,7 @@
 \alias{retrieve.job}
 \title{Retrieve results using job id}
 \usage{
-retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = ".")
+retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = NULL)
 }
 \arguments{
 \item{job.id}{Job id}
@@ -13,7 +13,8 @@ retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = ".")
 
 \item{fetch.files}{Flag to fetch result files from server and save them locally in output.dir}
 
-\item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files fetched from the server}
+\item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files 
+fetched from the server (if NULL, a folder named same as job.id in the current working directory)}
 }
 \value{
 result List containing scores of top-ranking proteins, 

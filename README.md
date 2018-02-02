@@ -14,20 +14,31 @@ the species / tissue specific protein interaction network.
     * rvest
 
 ## Generating man files / installation using roxygen / devtools
+```R
 library(devtools)
-setwd("guildifyR")
+#setwd("guildifyR")
 document()
-setwd("..")
-install("guildifyR)
-
-## Generating tar.gz archieve
-tar cvzf guildifyR.tgz --exclude .git guildifyR/
+```
 
 ## Generating manual using Rd2pdf
+```bash
 R CMD Rd2pdf --pdf --title='guildifyR' -o guildifyR.pdf man/*.Rd
+```
+
+## Generating tar.gz archieve
+```bash
+tar cvzf guildifyR.tgz --exclude .git guildifyR/
+```
 
 ## Install from tgz file
 R CMD INSTALL guildifyR.tgz
+
+## Install using devtools
+```R
+library(devtools)
+setwd("..")
+install("guildifyR)
+```
 
 ## Example query and retrieve results code
 ```R

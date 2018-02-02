@@ -45,10 +45,14 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
     # Get drugs targeting top ranking genes
     #names <- heading[21:length(heading)]
     names <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text() 
-    drug.table <- result.all %>% .[[5]] %>% as.data.frame()
-    colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
-    drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
-    drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+    if(length(names) > 0) {
+	drug.table <- result.all %>% .[[5]] %>% as.data.frame()
+	colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
+	drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
+	drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+    } else {
+	drug.table<-data.frame()
+    }
     # Print genetic and functional overlap
     message("Genetic overlap")
     print(result.stats)

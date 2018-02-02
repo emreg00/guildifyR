@@ -2,11 +2,12 @@
 % Please edit documentation in R/GifyResult.R
 \name{GifyResult}
 \alias{GifyResult}
-\title{Read/use only class}
+\title{GifyResult class containing data from GUILDify results}
 \usage{
 GifyResult(score.table, function.table, drug.table, enrichment.cutoff, job.id,
   job.id2)
 }
 \description{
-Read/use only class
+GifyResult class containing data from GUILDify results
 }
+\keyword{internal}
