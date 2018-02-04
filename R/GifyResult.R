@@ -1,4 +1,5 @@
 
+# GifyResult class containing data from GUILDify results 
 # Data types for GifyResult class definition
 setClassUnion("characterOrNULL", members=c("character", "NULL"))
 setClassUnion("integerOrNULL", members=c("integer", "NULL"))
@@ -15,23 +16,37 @@ setClass("GifyResult",
 )
 
 # GifyResult constructor
-#' GifyResult class containing data from GUILDify results 
-#' @export
-#' @keywords internal
 GifyResult <- function(score.table, function.table, drug.table, enrichment.cutoff, job.id, job.id2)
     new("GifyResult", scores=score.table, functions=function.table, drugs=drug.table, cutoff=enrichment.cutoff, job.id=job.id, job.id2=job.id2)
 
 setGeneric("gScores", function(x) standardGeneric("gScores"))
+#' @export
+#' @keywords internal
 setMethod("gScores", "GifyResult", function(x) x@scores)
+
 setGeneric("gFunctions", function(x) standardGeneric("gFunctions"))
+#' @export
+#' @keywords internal
 setMethod("gFunctions", "GifyResult", function(x) x@functions)
+
 setGeneric("gDrugs", function(x) standardGeneric("gDrugs"))
+#' @export
+#' @keywords internal
 setMethod("gDrugs", "GifyResult", function(x) x@drugs)
+
 setGeneric("gCutoff", function(x) standardGeneric("gCutoff"))
+#' @export
+#' @keywords internal
 setMethod("gCutoff", "GifyResult", function(x) x@cutoff)
+
 setGeneric("gId", function(x) standardGeneric("gId"))
+#' @export
+#' @keywords internal
 setMethod("gId", "GifyResult", function(x) x@job.id)
+
 setGeneric("gId2", function(x) standardGeneric("gId2"))
+#' @export
+#' @keywords internal
 setMethod("gId2", "GifyResult", function(x) x@job.id2)
 
 setMethod("length", "GifyResult", function(x) sprintf("%d top-ranking proteins, %d functions, %d drugs", nrow(x@scores), nrow(x@functions), nrow(x@drugs)))
@@ -41,8 +56,8 @@ setMethod("show", "GifyResult", function(object) cat(class(object), "instance wi
 setValidity("GifyResult",
     function(object)
     {
-        if (ncol(object@scores) != 6)
-            return("'scores' table must have 6 columns")
+        if (ncol(object@scores) != 6 & ncol(object@scores) != 4)
+            return(sprintf("'scores' table does not have proper shape: (%d %d)", nrow(object@scores), ncol(object@scores)))
         if (ncol(object@functions) != 5)
             return("'functions' table must have 5 columns")
         if (ncol(object@drugs) != 6)

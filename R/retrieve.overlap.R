@@ -3,7 +3,7 @@
 #'
 #' @param job.id1 Job id 1
 #' @param job.id2 Job id 2
-#' @param fetch.files Flag to fetch result files from server and save them locally in output.dir
+#' @param fetch.files Flag to fetch result files (for top-ranking 1\%) from server and save them locally in output.dir
 #' @param output.dir Directory to save the ranking, function, subnetwork and drug info files fetched from the server
 #' @return result List containing scores of common top-ranking proteins, 
 #'         common functions enriched among top-ranking proteins,
@@ -12,15 +12,28 @@
 #' @examples
 #' result = retrieve.overlap(job.id1, job.id2)
 #' getSlots(class(result))
-#' head(scores(result))
+#' #Scores
+#' head(gScores(result))
+#' #Functions
+#' head(gFunctions(result))
+#' #Drugs
+#' head(gDrugs(result))
 #' @export
-retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
+retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir=NULL) {
     result.table = NULL
     go.table <- NULL
     drug.table <- NULL
     message(paste("Retrieving the overlap between", job.id1, job.id2))
     html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result_overlap/", job.id1, "/", job.id2, "/1/500/1/500/1")))
     html <- httr::content(html)
+    txt <- html %>% rvest::html_nodes(xpath="//h1") 
+    if(length(txt) > 0) {
+	txt <- txt %>% rvest::html_text() %>% trimws() 
+	if(startsWith(txt, "Server Error")) {
+	    warning("Server Error!")
+	    stop("Please make sure that you have provided valid job ids and if the problem persists contact to web master.")
+	}
+    }
     heading <- html %>% rvest::html_nodes(xpath="//table/tr/th") %>% rvest::html_text() 
     result.all <- html %>% rvest::html_nodes("table") %>% rvest::html_table() 
     # Get overlap stats
@@ -61,13 +74,16 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir="./") {
     # Save results in file
     if(fetch.files) {
 	suffix <- "1"
-	download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=paste0(output.dir, job.id, "_drugs_top_", suffix, ".txt"), method="auto", quiet = FALSE)
-	write.table(result.table, file = paste0(output.dir, job.id1, job.id2, "_proteins_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(result.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
-	write.table(go.table, file = paste0(output.dir, job.id1, job.id2, "_functions_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
-	write.table(drug.table, file = paste0(output.dir, job.id1, job.id2, "_drugs_top_", suffix, ".txt"), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	if(is.null(output.dir)) {
+	    output.dir = file.path(getwd(), paste(job.id1, job.id2, sep="-"))
+	}
+	dir.create(output.dir)
+	write.table(result.table, file = file.path(output.dir, paste0("proteins_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(result.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	write.table(go.table, file = file.path(output.dir, paste0("functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	write.table(drug.table, file = file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
     #return(list(protein.table=result.table, function.table=go.table, drug.table=drug.table))
-    gify <- GifyResult(result.table, go.table, drug.table, NULL, job.id, job.id)
+    gify <- GifyResult(result.table, go.table, drug.table, NULL, job.id1, job.id2)
     return(gify)
 }
 

@@ -11,10 +11,11 @@ retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = NULL)
 
 \item{n.top}{Number of top proteins to retrieve. If NULL top functionally enriched proteins are provided (upto 500 proteins)}
 
-\item{fetch.files}{Flag to fetch result files from server and save them locally in output.dir}
+\item{fetch.files}{Flag to fetch result files from server and save them locally in output.dir 
+(If NULL files for top functionally enriched proteins are provided, otherwise files for top-ranking 1\% are provided)}
 
 \item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files 
-fetched from the server (if NULL, a folder named same as job.id in the current working directory)}
+fetched from the server. If NULL, a folder with the same as name as the job.id is created in the current working directory}
 }
 \value{
 result List containing scores of top-ranking proteins, 
@@ -28,5 +29,10 @@ Retrieve results using job id
 \examples{
 result = retrieve.job(job.id)
 getSlots(class(result))
-head(scores(result))
+#Scores
+head(gScores(result))
+#Functions
+head(gFunctions(result))
+#Drugs
+head(gDrugs(result))
 }

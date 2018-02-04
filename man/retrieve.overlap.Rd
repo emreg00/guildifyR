@@ -4,14 +4,14 @@
 \alias{retrieve.overlap}
 \title{Retrieve overlap between two results using two job ids}
 \usage{
-retrieve.overlap(job.id1, job.id2, fetch.files = F, output.dir = "./")
+retrieve.overlap(job.id1, job.id2, fetch.files = F, output.dir = NULL)
 }
 \arguments{
 \item{job.id1}{Job id 1}
 
 \item{job.id2}{Job id 2}
 
-\item{fetch.files}{Flag to fetch result files from server and save them locally in output.dir}
+\item{fetch.files}{Flag to fetch result files (for top-ranking 1\%) from server and save them locally in output.dir}
 
 \item{output.dir}{Directory to save the ranking, function, subnetwork and drug info files fetched from the server}
 }
@@ -27,5 +27,10 @@ Retrieve overlap between two results using two job ids
 \examples{
 result = retrieve.overlap(job.id1, job.id2)
 getSlots(class(result))
-head(scores(result))
+#Scores
+head(gScores(result))
+#Functions
+head(gFunctions(result))
+#Drugs
+head(gDrugs(result))
 }

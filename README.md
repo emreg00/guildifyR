@@ -37,7 +37,7 @@ R CMD INSTALL guildifyR.tgz
 ```R
 library(devtools)
 setwd("..")
-install("guildifyR)
+install("guildifyR")
 ```
 
 ## Example query and retrieve results code

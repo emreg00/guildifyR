@@ -3,9 +3,10 @@
 #'
 #' @param job.id Job id
 #' @param n.top Number of top proteins to retrieve. If NULL top functionally enriched proteins are provided (upto 500 proteins)
-#' @param fetch.files Flag to fetch result files from server and save them locally in output.dir
+#' @param fetch.files Flag to fetch result files from server and save them locally in output.dir 
+#' (If NULL files for top functionally enriched proteins are provided, otherwise files for top-ranking 1\% are provided)
 #' @param output.dir Directory to save the ranking, function, subnetwork and drug info files 
-#'	  fetched from the server (if NULL, a folder named same as job.id in the current working directory)
+#'	  fetched from the server. If NULL, a folder with the same as name as the job.id is created in the current working directory
 #' @return result List containing scores of top-ranking proteins, 
 #'         functions enriched among top-ranking proteins,
 #'         drugs targeting top-ranking proteins,
@@ -13,7 +14,12 @@
 #' @examples
 #' result = retrieve.job(job.id)
 #' getSlots(class(result))
-#' head(scores(result))
+#' #Scores
+#' head(gScores(result))
+#' #Functions
+#' head(gFunctions(result))
+#' #Drugs
+#' head(gDrugs(result))
 #' @export
 retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     result.table = NULL
@@ -69,7 +75,9 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
 	}
     }
     if(is.null(n.top)) {
-	result.table <- result.table[1:cutoff,]
+	if(cutoff < n.top2) { 
+	    result.table <- result.table[1:cutoff,]
+	}
     }
     # Get GO functions of top ranking genes
     names <- heading[11:15]
@@ -104,7 +112,7 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
 	if(length(names) > 0) {
 	    download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), method="auto", quiet = FALSE)
 	}
-	write.table(go.table, file = file.path(output.dir, paste0("_functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	write.table(go.table, file = file.path(output.dir, paste0("functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
     gify <- GifyResult(result.table, go.table, drug.table, cutoff, job.id, NULL)
     #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=cutoff))
