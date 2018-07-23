@@ -4,16 +4,19 @@
 \alias{query}
 \title{Get protein/gene info associated with the query keywords}
 \usage{
-query(keywords, species = "9606", tissue = "All", quote.keywords = T)
+query(keywords, species = "9606", tissue = "all",
+  network.source = "BIANA", quote.keywords = T)
 }
 \arguments{
 \item{keywords}{Text containing description of a phenotype or list of genes (seperated by ";")}
 
 \item{species}{Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)}
 
-\item{quote.keywords}{Quotes the keywords to treat whitespaces as ANDs (e.g., "Muscular Dystrophy")}
+\item{tissue}{Tissue identifier (all, liver, lung, etc., see get.species.info method)}
 
-\item{tissues}{Tissue identifier (All, brain, liver, etc., see get.species.info method)}
+\item{network.source}{Interaction network source (BIANA, STRING, HIPPIE, etc.)}
+
+\item{quote.keywords}{Quotes the keywords to treat whitespaces as ANDs (e.g., "Muscular Dystrophy")}
 }
 \value{
 result.table Data frame containing list of matching proteins/genes and their description
@@ -22,5 +25,5 @@ result.table Data frame containing list of matching proteins/genes and their des
 Get protein/gene info associated with the query keywords
 }
 \examples{
-result.table = query("alzheimer", species="10090", tissue="All")
+result.table = query("alzheimer", species="10090", tissue="all")
 }

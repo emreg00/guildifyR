@@ -11,6 +11,7 @@ get.species.info<-function() {
     html <- httr::content(html)
     species = c()
     tissues = c()
+    network.sources = c()
     i <- 1
     for(row in html %>% rvest::html_nodes("select")) { # %>% .[[1]] %>% rvest::html_nodes(xpath= ".//option"))) {
 	for(element in row %>% rvest::html_nodes(xpath=".//option")) {
@@ -18,11 +19,13 @@ get.species.info<-function() {
 		species <- c(species, element %>% rvest::html_attr("value"))
 	    } else if(i == 2) {
 		tissues <- c(tissues, element %>% rvest::html_text())
+	    } else if(i == 3) {
+		network.sources <- c(network.sources, element %>% rvest::html_text())
 	    }
 	}
 	i <- i + 1
     }
-    result <- list(species = species, tissues = tissues)
+    result <- list(species = species, tissues = tissues, network.sources = network.sources)
     return(result)
 }
 

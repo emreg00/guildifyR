@@ -89,8 +89,8 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     if(length(names) > 0) {
 	drug.table <- result.all %>% .[[4]] %>% as.data.frame()
 	colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
-	drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
-	drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+	#drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
+	#drug.table$targets <- gsub(";", ", ", drug.table$targets) 
     } else {
 	drug.table <- data.frame()
     }

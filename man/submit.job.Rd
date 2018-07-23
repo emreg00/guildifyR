@@ -4,10 +4,16 @@
 \alias{submit.job}
 \title{Submit job using the guildifyR query result table}
 \usage{
-submit.job(result.table, species, tissue, scoring.options = list(netcombo =
-  T))
+submit.job(result.table, species, tissue, network.source,
+  scoring.options = list(netcombo = T))
 }
 \arguments{
+\item{species}{Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)}
+
+\item{tissue}{Tissue identifier (all, liver, lung, etc., see get.species.info method)}
+
+\item{network.source}{Interaction network source (BIANA, STRING, HIPPIE, etc.)}
+
 \item{scoring.options}{Prioritization method options (default NetCombo)}
 
 \item{query.table}{Data frame contaning information from guildifyR query (user entitiy info, network info, source etc...)}
@@ -20,8 +26,9 @@ Submit job using the guildifyR query result table
 }
 \examples{
 species="10090"
-tissue="All"
-result.table = query("alzheimer", species)
+tissue="all"
+network.source="BIANA"
+result.table = query("alzheimer", species, tissue, network.source)
 #Diamond
 scoring.options = list(diamond=T)
 #NetScore
@@ -32,5 +39,5 @@ scoring.options = list(netzcore=T, repetitionZelector=3)
 scoring.options = list(netshort=T)
 #NetCombo
 scoring.options = list(netcombo=T)
-job.id = submit.job(result.table, species, tissue, scoring.options)
+job.id = submit.job(result.table, species, tissue, network.source, scoring.options)
 }

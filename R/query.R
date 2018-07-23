@@ -3,14 +3,15 @@
 #'
 #' @param keywords Text containing description of a phenotype or list of genes (seperated by ";")
 #' @param species Species tax identifier (9606: human, 10090: mouse, etc., see get.species.info method)
-#' @param tissues Tissue identifier (All, brain, liver, etc., see get.species.info method)
+#' @param tissue Tissue identifier (all, liver, lung, etc., see get.species.info method)
+#' @param network.source Interaction network source (BIANA, STRING, HIPPIE, etc.)
 #' @param quote.keywords Quotes the keywords to treat whitespaces as ANDs (e.g., "Muscular Dystrophy")
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
-#' result.table = query("alzheimer", species="10090", tissue="All")
+#' result.table = query("alzheimer", species="10090", tissue="all")
 #' @export
-query<-function(keywords, species="9606", tissue="All", quote.keywords=T) {
-    guildifyR:::check.parameters(species, tissue)
+query<-function(keywords, species="9606", tissue="all", network.source="BIANA", quote.keywords=T) {
+    guildifyR:::check.parameters(species, tissue, network.source)
     result.table <- NULL
     if(quote.keywords) {
 	keywords <- gsub('"', '', keywords) 
@@ -23,7 +24,7 @@ query<-function(keywords, species="9606", tissue="All", quote.keywords=T) {
 	    }
 	}
     }
-    html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue)) 
+    html <- httr::POST(url = paste0(guildifyR:::get.url(), "/query"), body = list(keywords=keywords, species=species, tissue=tissue, network_source=network.source)) 
     html <- httr::content(html)
     txt <- html %>% rvest::html_nodes(xpath="//p") %>% rvest::html_text() %>% .[1] %>% trimws()
     if(txt == "No match for the query!") {
@@ -33,8 +34,8 @@ query<-function(keywords, species="9606", tissue="All", quote.keywords=T) {
     get.query.result.table<-function(html, idx.table) {
 	heading <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text()
 	heading <- heading[1:(length(heading)/2)][-1]
-	result <- data.frame(matrix(nrow = 0, ncol = length(heading)+2))
-	colnames(result) <- c("id", tolower(gsub(" ", ".", trimws(heading))), "source")
+	result <- data.frame(matrix(nrow = 0, ncol = length(heading)+1)) # +2
+	colnames(result) <- c("id", tolower(gsub(" ", ".", trimws(heading)))) #, "source")
 	i <- 0
 	for(row in (html %>% rvest::html_nodes("table") %>% .[[idx.table]] %>% rvest::html_nodes(xpath= ".//tr"))) {
 	    if(i == 0) {
@@ -50,15 +51,15 @@ query<-function(keywords, species="9606", tissue="All", quote.keywords=T) {
 		    next
 		}
 		result[i, j] <- rvest::html_text(element, trim=T) 
-		if(colnames(result)[j] == "description") {
-		    for(txt in (row %>% rvest::html_nodes(".success"))) {
-			evidences <- c(evidences, rvest::html_text(txt)) 
-		    }
-		    evidences <- unique(evidences)
-		}
+		#if(colnames(result)[j] == "description") { # Not necessary anymore
+		#    for(txt in (row %>% rvest::html_nodes(".success"))) {
+		#	evidences <- c(evidences, rvest::html_text(txt)) 
+		#    }
+		#    evidences <- unique(evidences)
+		#}
 		j <- j + 1
 	    }
-	    result[i, j] <- paste(evidences, collapse=",")
+	    #result[i, j] <- paste(evidences, collapse=",")
 	    i <- i + 1
 	}
 	return(result)

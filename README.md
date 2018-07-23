@@ -33,11 +33,17 @@ tar cvzf guildifyR.tgz --exclude .git guildifyR/
 ## Install from tgz file
 R CMD INSTALL guildifyR.tgz
 
-## Install using devtools
+## Install from source using devtools
 ```R
 library(devtools)
 setwd("..")
 install("guildifyR")
+```
+
+## Install from GitHub repository using devtools
+```R
+library(devtools)
+install_github("emreg00/guildifyR") 
 ```
 
 ## Example query and retrieve results code

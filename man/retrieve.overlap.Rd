@@ -4,12 +4,15 @@
 \alias{retrieve.overlap}
 \title{Retrieve overlap between two results using two job ids}
 \usage{
-retrieve.overlap(job.id1, job.id2, fetch.files = F, output.dir = NULL)
+retrieve.overlap(job.id1, job.id2, top.validated = T, fetch.files = F,
+  output.dir = NULL)
 }
 \arguments{
 \item{job.id1}{Job id 1}
 
 \item{job.id2}{Job id 2}
+
+\item{top.validated}{Flag to get overlap between either top-ranking functionally validated proteins (default) or top top-ranking 1\%}
 
 \item{fetch.files}{Flag to fetch result files (for top-ranking 1\%) from server and save them locally in output.dir}
 

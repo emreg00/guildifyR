@@ -2,14 +2,15 @@
 #' Check whether provided species, tissue and scoring parameter values are valid
 #' @param species Species tax id
 #' @param tissue Tissue name
+#' @param network.source Interaction network source (BIANA, STRING, HIPPIE, etc.)
 #' @param scoring.options Parameters for prioritization
 #' @keywords internal
-check.parameters<-function(species, tissue, scoring.options=NULL) {
+check.parameters<-function(species, tissue, network.source, scoring.options=NULL) {
     result = guildifyR::get.species.info()
-    if(!(species %in% result$species) | !(tissue %in% result$tissues)) {
+    if(!(species %in% result$species) | !(tissue %in% result$tissues) | !(network.source %in% result$network.sources)) {
 	print("Please provide an allowed species tax id and/or tissue! Available species tax ids and tissues:")
 	print(result)
-	stop(paste0("You provided: ", species, " & ", tissue))
+	stop(paste0("You provided: ", species, " & ", tissue, " & ", network.source))
     }
     valid.methods <- c("netscore", "netzcore", "netshort", "netcombo", "diamond")
     valid.names <- c("repetitionSelector", "iterationSelector", "repetitionZelector")

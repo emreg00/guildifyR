@@ -4,12 +4,14 @@
 \alias{check.parameters}
 \title{Check whether provided species, tissue and scoring parameter values are valid}
 \usage{
-check.parameters(species, tissue, scoring.options = NULL)
+check.parameters(species, tissue, network.source, scoring.options = NULL)
 }
 \arguments{
 \item{species}{Species tax id}
 
 \item{tissue}{Tissue name}
+
+\item{network.source}{Interaction network source (BIANA, STRING, HIPPIE, etc.)}
 
 \item{scoring.options}{Parameters for prioritization}
 }

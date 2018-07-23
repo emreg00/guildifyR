@@ -3,6 +3,7 @@
 #'
 #' @param job.id1 Job id 1
 #' @param job.id2 Job id 2
+#' @param top.validated Flag to get overlap between either top-ranking functionally validated proteins (default) or top top-ranking 1\% 
 #' @param fetch.files Flag to fetch result files (for top-ranking 1\%) from server and save them locally in output.dir
 #' @param output.dir Directory to save the ranking, function, subnetwork and drug info files fetched from the server
 #' @return result List containing scores of common top-ranking proteins, 
@@ -19,12 +20,17 @@
 #' #Drugs
 #' head(gDrugs(result))
 #' @export
-retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir=NULL) {
+retrieve.overlap<-function(job.id1, job.id2, top.validated=T, fetch.files=F, output.dir=NULL) {
     result.table = NULL
     go.table <- NULL
     drug.table <- NULL
+    if(top.validated) {
+	suffix <- "enrich"
+    } else {
+	suffix <- "1"
+    }
     message(paste("Retrieving the overlap between", job.id1, job.id2))
-    html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result_overlap/", job.id1, "/", job.id2, "/1/500/1/500/1")))
+    html <- httr::POST(url = URLencode(paste0(guildifyR:::get.url(), "/result_overlap/", job.id1, "/", job.id2, "/1/500/1/500/", suffix)))
     html <- httr::content(html)
     txt <- html %>% rvest::html_nodes(xpath="//h1") 
     if(length(txt) > 0) {
@@ -61,8 +67,8 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir=NULL) {
     if(length(names) > 0) {
 	drug.table <- result.all %>% .[[5]] %>% as.data.frame()
 	colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
-	drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
-	drug.table$targets <- gsub(";", ", ", drug.table$targets) 
+	#drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
+	#drug.table$targets <- gsub(";", ", ", drug.table$targets) 
     } else {
 	drug.table<-data.frame()
     }
@@ -73,14 +79,15 @@ retrieve.overlap<-function(job.id1, job.id2, fetch.files=F, output.dir=NULL) {
     print(go.stats)
     # Save results in file
     if(fetch.files) {
-	suffix <- "1"
 	if(is.null(output.dir)) {
 	    output.dir = file.path(getwd(), paste(job.id1, job.id2, sep="-"))
 	}
 	dir.create(output.dir)
 	write.table(result.table, file = file.path(output.dir, paste0("proteins_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(result.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
 	write.table(go.table, file = file.path(output.dir, paste0("functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
-	write.table(drug.table, file = file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	if(length(names) > 0) {
+	    write.table(drug.table, file = file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	}
     }
     #return(list(protein.table=result.table, function.table=go.table, drug.table=drug.table))
     gify <- GifyResult(result.table, go.table, drug.table, NULL, job.id1, job.id2)

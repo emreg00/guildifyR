@@ -60,8 +60,8 @@ setValidity("GifyResult",
             return(sprintf("'scores' table does not have proper shape: (%d %d)", nrow(object@scores), ncol(object@scores)))
         if (ncol(object@functions) != 5)
             return("'functions' table must have 5 columns")
-        if (ncol(object@drugs) != 6)
-            return("'drugs' table must have 6 columns")
+        #if (ncol(object@drugs) != 6) # Most species do not have drug info
+        #    return("'drugs' table must have 6 columns")
         if (!is.null(object@cutoff))
 	    if (!(object@cutoff > 0))
 		return("'cutoff' has invalid value")
