@@ -51,12 +51,13 @@ install_github("emreg00/guildifyR")
 library(guildifyR)
 
 species="9606"
-tissue="All"
-result.table = query("alzheimer", species, tissue)
-job.id = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=3, iterationSelector=2))
+tissue="all"
+network.source="BIANA"
+result.table = query("alzheimer", species, tissue, network.source)
+job.id = submit.job(result.table, species, tissue, network.source, list(netscore=T, repetitionSelector=3, iterationSelector=2))
 result = retrieve.job(job.id)
-result.table = query("lung neoplasms", species, tissue)
-job.id2 = submit.job(result.table, species, tissue, list(netscore=T, repetitionSelector=3, iterationSelector=2))
+result.table = query("lung neoplasms", species, tissue, network.source)
+job.id2 = submit.job(result.table, species, tissue, network.source, list(netscore=T, repetitionSelector=3, iterationSelector=2))
 result = retrieve.overlap(job.id, job.id2)
 ```
 
