@@ -4,7 +4,8 @@
 \alias{retrieve.job}
 \title{Retrieve results using job id}
 \usage{
-retrieve.job(job.id, n.top = NULL, fetch.files = F, output.dir = NULL)
+retrieve.job(job.id, n.top = NULL, fetch.files = F,
+  output.dir = NULL)
 }
 \arguments{
 \item{job.id}{Job id}
@@ -31,8 +32,10 @@ result = retrieve.job(job.id)
 getSlots(class(result))
 #Scores
 head(gScores(result))
-#Functions
+#Functions of top ranking genes
 head(gFunctions(result))
+#Functions of seeds
+head(gFunctions2(result))
 #Drugs
 head(gDrugs(result))
 }

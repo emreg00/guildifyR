@@ -15,14 +15,17 @@
 #' getSlots(class(result))
 #' #Scores
 #' head(gScores(result))
-#' #Functions
+#' #Common functions between top ranking genes of two results
 #' head(gFunctions(result))
+#' #Functions of top ranking common genes of two results
+#' head(gFunctions2(result))
 #' #Drugs
 #' head(gDrugs(result))
 #' @export
 retrieve.overlap<-function(job.id1, job.id2, top.validated=T, fetch.files=F, output.dir=NULL) {
     result.table = NULL
     go.table <- NULL
+    go.table2 <- NULL
     drug.table <- NULL
     if(top.validated) {
 	suffix <- "enrich"
@@ -61,11 +64,15 @@ retrieve.overlap<-function(job.id1, job.id2, top.validated=T, fetch.files=F, out
     names <- heading[16:20]
     go.table <- result.all %>% .[[4]] %>% as.data.frame()
     colnames(go.table) <- tolower(gsub(" ", ".", trimws(names)))
+    # Get GO functions of common top ranking genes
+    names <- heading[21:25]
+    go.table2 <- result.all %>% .[[5]] %>% as.data.frame()
+    colnames(go.table2) <- tolower(gsub(" ", ".", trimws(names)))
     # Get drugs targeting top ranking genes
     #names <- heading[21:length(heading)]
     names <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text() 
     if(length(names) > 0) {
-	drug.table <- result.all %>% .[[5]] %>% as.data.frame()
+	drug.table <- result.all %>% .[[6]] %>% as.data.frame()
 	colnames(drug.table) <- tolower(gsub(" ", ".", trimws(names)))
 	#drug.table$type.of.drug <- gsub(";", ", ", drug.table$type.of.drug) 
 	#drug.table$targets <- gsub(";", ", ", drug.table$targets) 
@@ -85,12 +92,12 @@ retrieve.overlap<-function(job.id1, job.id2, top.validated=T, fetch.files=F, out
 	dir.create(output.dir)
 	write.table(result.table, file = file.path(output.dir, paste0("proteins_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(result.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
 	write.table(go.table, file = file.path(output.dir, paste0("functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	write.table(go.table2, file = file.path(output.dir, paste0("functions_common_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table2), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
 	if(length(names) > 0) {
 	    write.table(drug.table, file = file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(drug.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
 	}
     }
-    #return(list(protein.table=result.table, function.table=go.table, drug.table=drug.table))
-    gify <- GifyResult(result.table, go.table, drug.table, NULL, job.id1, job.id2)
+    gify <- GifyResult(result.table, go.table, go.table2, drug.table, NULL, job.id1, job.id2)
     return(gify)
 }
 

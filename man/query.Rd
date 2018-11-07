@@ -25,5 +25,5 @@ result.table Data frame containing list of matching proteins/genes and their des
 Get protein/gene info associated with the query keywords
 }
 \examples{
-result.table = query("alzheimer", species="10090", tissue="all")
+result.table = query("alzheimer", species="10090", tissue="all", network.source="BIANA")
 }

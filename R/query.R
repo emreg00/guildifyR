@@ -8,7 +8,7 @@
 #' @param quote.keywords Quotes the keywords to treat whitespaces as ANDs (e.g., "Muscular Dystrophy")
 #' @return result.table Data frame containing list of matching proteins/genes and their description
 #' @examples
-#' result.table = query("alzheimer", species="10090", tissue="all")
+#' result.table = query("alzheimer", species="10090", tissue="all", network.source="BIANA")
 #' @export
 query<-function(keywords, species="9606", tissue="all", network.source="BIANA", quote.keywords=T) {
     guildifyR:::check.parameters(species, tissue, network.source)
@@ -71,9 +71,13 @@ query<-function(keywords, species="9606", tissue="all", network.source="BIANA", 
 	warning(e)
 	stop("An error occurred with the query, make sure the provided keywords are correct!")
     })
-    result[, "in.network"] <- 1
+    if(nrow(result) > 0) {
+	result[, "in.network"] <- 1
+    }
     result.out <- rbind(get.query.result.table(html, 4)) 
-    result.out[, "in.network"] <- 0
+    if(nrow(result.out) > 0) {
+	result.out[, "in.network"] <- 0
+    }
     result.table <- rbind(result, result.out)
     print(sprintf("%d entries are retrieved (%d not in network)", nrow(result.table), nrow(result.out)))
     return(result.table)

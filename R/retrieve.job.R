@@ -16,14 +16,17 @@
 #' getSlots(class(result))
 #' #Scores
 #' head(gScores(result))
-#' #Functions
+#' #Functions of top ranking genes
 #' head(gFunctions(result))
+#' #Functions of seeds
+#' head(gFunctions2(result))
 #' #Drugs
 #' head(gDrugs(result))
 #' @export
 retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     result.table = NULL
     go.table <- NULL
+    go.table2 <- NULL
     drug.table <- NULL
     if(is.null(n.top)) {
 	n.top2 <- 500
@@ -56,6 +59,7 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
 	    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=NULL))
 	}
     }
+
     # Get scoring result table
     heading <- html %>% rvest::html_nodes(xpath="//table/tr/th") %>% rvest::html_text() 
     result.all <- html %>% rvest::html_nodes("table") %>% rvest::html_table() # %>% .[[1]] %>% as.data.frame()
@@ -65,6 +69,7 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     result.table$seed <- ifelse(grepl("^seed ", result.table$gene.symbol), 1, 0)
     result.table$gene.symbol <- gsub("^seed ", "", result.table$gene.symbol) #result.table$gene.symbol %<>% gsub("seed ", "", .) 
     result.table$uniprot.id <- gsub(" ", ", ", result.table$uniprot.id) 
+
     # Get functional enrichment based top ranking cutoff
     cutoff <- NULL
     for(txt in html %>% rvest::html_nodes(xpath=".//input") %>% rvest::html_attr("onclick")) {
@@ -83,6 +88,12 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     names <- heading[11:15]
     go.table <- result.all %>% .[[2]] %>% as.data.frame()
     colnames(go.table) <- tolower(gsub(" ", ".", trimws(names)))
+
+    # Get GO functions of seeds
+    names <- heading[16:20]
+    go.table2 <- result.all %>% .[[3]] %>% as.data.frame()
+    colnames(go.table2) <- tolower(gsub(" ", ".", trimws(names)))
+
     # Get drugs targeting top ranking genes
     #names <- heading[16:length(heading)]
     names <- html %>% rvest::html_nodes(xpath="//thead/tr/th") %>% rvest::html_text() 
@@ -94,6 +105,7 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
     } else {
 	drug.table <- data.frame()
     }
+
     # Save results in file
     if(fetch.files) {
 	if(is.null(n.top)) {
@@ -113,9 +125,9 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
 	    download.file(url = paste0(guildifyR:::get.url(), "/data/", job.id, "/drugs.txt.", suffix), destfile=file.path(output.dir, paste0("drugs_top_", suffix, ".txt")), method="auto", quiet = FALSE)
 	}
 	write.table(go.table, file = file.path(output.dir, paste0("functions_top_", suffix, ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
+	write.table(go.table2, file = file.path(output.dir, paste0("functions_seed", ".txt")), quote = F, sep = "\t", row.names=F, col.names = gsub("[.]", " ", sapply(colnames(go.table2), function(x) { substr(x, 1, 1) <- toupper(substr(x, 1, 1)); return(x) }, USE.NAMES=F)))
     }
-    gify <- GifyResult(result.table, go.table, drug.table, cutoff, job.id, NULL)
-    #return(list(score.table=result.table, function.table=go.table, drug.table=drug.table, cutoff.index=cutoff))
+    gify <- GifyResult(result.table, go.table, go.table2, drug.table, cutoff, job.id, NULL)
     return(gify)
 }
 

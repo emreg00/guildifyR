@@ -32,8 +32,10 @@ result = retrieve.overlap(job.id1, job.id2)
 getSlots(class(result))
 #Scores
 head(gScores(result))
-#Functions
+#Common functions between top ranking genes of two results
 head(gFunctions(result))
+#Functions of top ranking common genes of two results
+head(gFunctions2(result))
 #Drugs
 head(gDrugs(result))
 }

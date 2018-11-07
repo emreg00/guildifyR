@@ -8,6 +8,7 @@ setClassUnion("integerOrNULL", members=c("integer", "NULL"))
 setClass("GifyResult",
     slots = c(scores="data.frame", 
 	      functions="data.frame", 
+	      functions2="data.frame", 
 	      drugs="data.frame", 
 	      cutoff="integerOrNULL",
 	      job.id="characterOrNULL",
@@ -16,8 +17,8 @@ setClass("GifyResult",
 )
 
 # GifyResult constructor
-GifyResult <- function(score.table, function.table, drug.table, enrichment.cutoff, job.id, job.id2)
-    new("GifyResult", scores=score.table, functions=function.table, drugs=drug.table, cutoff=enrichment.cutoff, job.id=job.id, job.id2=job.id2)
+GifyResult <- function(score.table, function.table, function.table2, drug.table, enrichment.cutoff, job.id, job.id2)
+    new("GifyResult", scores=score.table, functions=function.table, functions2=function.table2, drugs=drug.table, cutoff=enrichment.cutoff, job.id=job.id, job.id2=job.id2)
 
 setGeneric("gScores", function(x) standardGeneric("gScores"))
 #' @export
@@ -28,6 +29,11 @@ setGeneric("gFunctions", function(x) standardGeneric("gFunctions"))
 #' @export
 #' @keywords internal
 setMethod("gFunctions", "GifyResult", function(x) x@functions)
+
+setGeneric("gFunctions2", function(x) standardGeneric("gFunctions2"))
+#' @export
+#' @keywords internal
+setMethod("gFunctions2", "GifyResult", function(x) x@functions2)
 
 setGeneric("gDrugs", function(x) standardGeneric("gDrugs"))
 #' @export
@@ -63,8 +69,10 @@ setValidity("GifyResult",
         #if (ncol(object@drugs) != 6) # Most species do not have drug info
         #    return("'drugs' table must have 6 columns")
         if (!is.null(object@cutoff))
-	    if (!(object@cutoff > 0))
-		return("'cutoff' has invalid value")
+	    if (!(object@cutoff == 0))
+		message("Functional enrichment based top ranking cutoff is 0!")
+	    if (!(object@cutoff >= 0))
+		return(paste0("'cutoff' has invalid value", ": ", cutoff))
         #if (!is.null(object@job.id)) # there are custom job.ids as well
 	#    if (nchar(object@job.id) != 36)
 	#	return("'job.id' must have 36 characters")
