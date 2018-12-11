@@ -85,12 +85,12 @@ retrieve.job<-function(job.id, n.top=NULL, fetch.files=F, output.dir=NULL) {
 	}
     }
     # Get GO functions of top ranking genes
-    names <- heading[11:15]
+    names <- heading[6:10]
     go.table <- result.all %>% .[[2]] %>% as.data.frame()
     colnames(go.table) <- tolower(gsub(" ", ".", trimws(names)))
 
     # Get GO functions of seeds
-    names <- heading[16:20]
+    names <- heading[11:15]
     go.table2 <- result.all %>% .[[3]] %>% as.data.frame()
     colnames(go.table2) <- tolower(gsub(" ", ".", trimws(names)))
 

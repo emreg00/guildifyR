@@ -50,14 +50,23 @@ install_github("emreg00/guildifyR")
 ```R
 library(guildifyR)
 
+# Parameters
 species="9606"
 tissue="all"
 network.source="BIANA"
+
+# Query and run using keyword Alzheimer 
 result.table = query("alzheimer", species, tissue, network.source)
 job.id = submit.job(result.table, species, tissue, network.source, list(netscore=T, repetitionSelector=3, iterationSelector=2))
+
+# Retrieve results (once completed)
 result = retrieve.job(job.id)
+
+# Query and run using keyword lung neoplasms 
 result.table = query("lung neoplasms", species, tissue, network.source)
 job.id2 = submit.job(result.table, species, tissue, network.source, list(netscore=T, repetitionSelector=3, iterationSelector=2))
+
+# Check overlap between the two results (once the runs are completed)
 result = retrieve.overlap(job.id, job.id2)
 ```
 
