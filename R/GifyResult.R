@@ -13,7 +13,7 @@ setClass("GifyResult",
 	      cutoff="integerOrNULL",
 	      job.id="characterOrNULL",
 	      job.id2="characterOrNULL"),
-    prototype = list(cutoff=NULL, job.id1=NULL, job.id2=NULL)
+    prototype = list(cutoff=NULL, job.id=NULL, job.id2=NULL)
 )
 
 # GifyResult constructor
