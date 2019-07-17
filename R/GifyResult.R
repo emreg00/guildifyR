@@ -69,7 +69,7 @@ setValidity("GifyResult",
         #if (ncol(object@drugs) != 6) # Most species do not have drug info
         #    return("'drugs' table must have 6 columns")
         if (!is.null(object@cutoff))
-	    if (!(object@cutoff == 0))
+	    if (object@cutoff == 0)
 		message("Functional enrichment based top ranking cutoff is 0!")
 	    if (!(object@cutoff >= 0))
 		return(paste0("'cutoff' has invalid value", ": ", cutoff))
